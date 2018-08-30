@@ -36,3 +36,8 @@
 (define-syntax-rule (stream-cons! item stream)
   (set! stream (stream-cons item
                             stream)))
+
+; Same idea, but with append
+(define-syntax-rule (append! mutated-ls ls)
+  (set! mutated-ls
+    (append mutated-ls ls)))

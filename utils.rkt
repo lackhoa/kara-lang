@@ -36,13 +36,21 @@
   (is-a? obj class))
 
 ; ------------------------------------------------------------
+; Display
+; ------------------------------------------------------------
+(def (pdisplay x
+               [columns 35]
+               [port (current-output-port)])
+  (parameterize ([pretty-print-columns columns])
+    (pretty-display x port)))
+
+; ------------------------------------------------------------
 ; Generators
 ; ------------------------------------------------------------
 (def (gen-get gen
               [num 10]
               [func (lam (x)
-                      (parameterize ([pretty-print-columns 50])
-                        (pretty-display x))
+                      (pdisplay x)
                       (newline))])
   (cond [(not (number? num))
          (raise "Expected a number")]

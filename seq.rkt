@@ -21,14 +21,14 @@
         [else
          (stream-member x (cdr seq))]))
 
-(def (exists pred seq)
+(def (exists? pred seq)
   (cond [(stream-empty? seq) #f]
         [(pred (stream-first seq)) #t]
         [else
-         (exists pred (stream-rest seq))]))
+         (exists? pred (stream-rest seq))]))
 
-(def (forall pred seq)
-  (exists (negate pred) seq))
+(def (forall? pred seq)
+  (exists? (negate pred) seq))
 
 ; Mapping and reducing with append to create nested maps
 (def (stream-flatmap proc seq)

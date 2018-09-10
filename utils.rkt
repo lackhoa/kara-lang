@@ -4,9 +4,9 @@
          racket/generator)
 (provide (all-defined-out))
 
-; -----------------------------------------------------------
-; Functional Stuff
-; -----------------------------------------------------------
+;; -----------------------------------------------------------
+;; Functional Stuff
+;; -----------------------------------------------------------
 (def (repeat func times)
     (when (> times 0)
         (func)
@@ -21,35 +21,38 @@
 (def (flip fn)
   (lam (x y) (fn y x)))
 
-; ------------------------------------------------------------
-; Testing Functions
-; ------------------------------------------------------------
+(def (sum-list ls)
+  (foldr + 0 ls))
+
+;; ------------------------------------------------------------
+;; Testing Functions
+;; ------------------------------------------------------------
 (def (fib n)
-    (cond [(= 0 n) 1]
-          [(= 1 n) 1]
-          [else (+ (fib (- n 1)) (fib (- n 2)))]))
+  (cond [(= 0 n) 1]
+        [(= 1 n) 1]
+        [else (+ (fib (- n 1)) (fib (- n 2)))]))
 
 (def (square n)
-    (* n n))
+  (* n n))
 
-; ------------------------------------------------------------
-; Assertions
-; ------------------------------------------------------------
+;; ------------------------------------------------------------
+;; Assertions
+;; ------------------------------------------------------------
 (define-simple-check (check-class obj class)
   (is-a? obj class))
 
-; ------------------------------------------------------------
-; Display
-; ------------------------------------------------------------
+;; ------------------------------------------------------------
+;; Display
+;; ------------------------------------------------------------
 (def (pdisplay x
                [columns 35]
                [port (current-output-port)])
   (parameterize ([pretty-print-columns columns])
     (pretty-display x port)))
 
-; ------------------------------------------------------------
-; Generators
-; ------------------------------------------------------------
+;; ------------------------------------------------------------
+;; Generators
+;; ------------------------------------------------------------
 (def (gen-get gen
               [num 10]
               [func (lam (x)
@@ -70,10 +73,10 @@
 
         [else (raise "Invalid number")]))
 
-; The impersonator pattern: yield all
-; values that `gen` yields.
+;; The impersonator pattern: yield all
+;; values that `gen` yields.
 (define-syntax-rule (gen-impersonate gen)
-  ; `g` stops the generator from being re-defined every loop
+  ;; `g` stops the generator from being re-defined every loop
   (let ([g gen])
     (let loop ()
       (match (g)

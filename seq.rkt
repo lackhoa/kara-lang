@@ -65,6 +65,28 @@
 ;; Synonym
 (def append1 pad)
 
+(define (combinations ls size)
+  (match size
+    [0   (list null)]
+    [(? positive? n)
+     (match ls
+       [(list)  (list)]
+       [(cons first rest)
+        (append (map (curry cons first)
+                     (combinations rest (sub1 size)))
+                (combinations rest size))])]))
+
+(define (stream-combinations ls size)
+  (match size
+    [0   (stream null)]
+    [(? positive? n)
+     (match ls
+       [(list)  empty-stream]
+       [(cons first rest)
+        (stream-append (stream-map (curry cons first)
+                                   (combinations rest (sub1 size)))
+                       (stream-combinations rest size))])]))
+
 ;;;; (def (permutations s)
 ;;;;   ;; This function sticks the x to the permutations that doesn't contain x
 ;;;;   (def (permute-aux x)

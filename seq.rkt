@@ -12,23 +12,20 @@
 
 ;; Test if `x` is in `seq`, but returns the tail when hit
 (def (stream-member x seq)
-  (cond [(stream-empty? seq)
-         #f]
+  (cond [(stream-empty? seq)  #f]
+        [(equal? x
+                 (car seq))   seq]
+        [else                 (stream-member x (cdr seq))]))
 
-        [(equal? x (car seq))
-         seq]
-
+(def (exists pred seq)
+  ;; Returns #f if doesn't exist, and the first witness if exists.
+  (cond [(stream-empty? seq)       #f]
+        [(pred (stream-first seq)) (stream-first seq)]
         [else
-         (stream-member x (cdr seq))]))
-
-(def (exists? pred seq)
-  (cond [(stream-empty? seq) #f]
-        [(pred (stream-first seq)) #t]
-        [else
-         (exists? pred (stream-rest seq))]))
+         (exists pred (stream-rest seq))]))
 
 (def (forall? pred seq)
-  (exists? (negate pred) seq))
+  (exists (negate pred) seq))
 
 (def (stream-remove x s)
   (stream-filter (lam (item)
@@ -64,66 +61,3 @@
 
 ;; Synonym
 (def append1 pad)
-
-(define (combinations ls size)
-  (match size
-    [0   (list null)]
-    [(? positive? n)
-     (match ls
-       [(list)  (list)]
-       [(cons first rest)
-        (append (map (curry cons first)
-                     (combinations rest (sub1 size)))
-                (combinations rest size))])]))
-
-(define (stream-combinations ls size)
-  (match size
-    [0   (stream null)]
-    [(? positive? n)
-     (match ls
-       [(list)  empty-stream]
-       [(cons first rest)
-        (stream-append (stream-map (curry cons first)
-                                   (combinations rest (sub1 size)))
-                       (stream-combinations rest size))])]))
-
-;;;; (def (permutations s)
-;;;;   ;; This function sticks the x to the permutations that doesn't contain x
-;;;;   (def (permute-aux x)
-;;;;     (map (lam (p) (cons x p))
-;;;;          (permutations (remove x s))))
-
-;;;;   (if (null? s)
-;;;;       (list null)  ;; Sequence containing empty set
-;;;;     (flatmap permute-aux s)))
-
-;;;; ;; params: seq (a sequence of sequences to take product).
-;;;; ;; returns: a sequence of lists as products
-;;;; ;; This function is lazy
-;;;; (def (product seqs)
-;;;;     ;; The algorithm of the foldr
-;;;;     (def (prod-aux first prod-rest)
-;;;;         (flatmap (lam (iter-first)
-;;;;                     (map (lam (iter-prod-rest)
-;;;;                            (cons iter-first iter-prod-rest))
-;;;;                          prod-rest))
-;;;;                  first))
-
-;;;;     (lfoldr prod-aux
-;;;;              (list null)  ;; Base case: kind of undefined?
-;;;;              seqs))
-
-;;;; ;; params s: a single sequence as a set
-;;;; ;;           (although not guaranteed by the algorithm).
-;;;; ;; returns: a sequence of list as subsets of the given set
-;;;; ;; Still lazy
-;;;; (def (powerset s)
-;;;;     (def (pow-aux first pow-rest)
-;;;;       (append (map (lam (pow-rest-iter)
-;;;;                      (cons first pow-rest-iter))
-;;;;                    pow-rest)                         ;; Include first
-;;;;               pow-rest))                             ;; Exclude first
-
-;;;;     (lfoldr pow-aux
-;;;;             (list null)  ;; Base case: the only subset of the empty set is itself
-;;;;             s))

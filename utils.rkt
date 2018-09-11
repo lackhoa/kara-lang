@@ -53,25 +53,27 @@
 ;; ------------------------------------------------------------
 ;; Generators
 ;; ------------------------------------------------------------
-(def (gen-get gen
-              [num 10]
-              [func (lam (x)
-                      (pdisplay x)
-                      (newline))])
-  (cond [(not (number? num))
-         (raise "Expected a number")]
+(def (gen-get gen num
+              [func (lam (x) (pdisplay x) (newline))])
+  (match num
+    [0              (void)]
+    [(? positive?)  (match (gen)
+                      ['DONE (void)]
+                      [val   (func val)
+                             (gen-get gen
+                                      (sub1 num)
+                                      func)])]
+    [_              (error "Invalid number" num)]))
 
-        [(= num 0) (void)]
-
-        [(> num 0)
-         (match (gen)
-           ['DONE (void)]
-           [val (func val)
-                (gen-get gen
-                         (- num 1)
-                         func)])]
-
-        [else (raise "Invalid number")]))
+(define (gen->list gen num)
+  ;; Returns: a list
+  (match num
+    [0              null]
+    [(? positive?)  (match (gen)
+                      ['DONE  null]
+                      [val    (cons val
+                                    (gen->list gen (sub1 num)))])]
+    [_              (error "Invalid number" num)]))
 
 ;; The impersonator pattern: yield all
 ;; values that `gen` yields.

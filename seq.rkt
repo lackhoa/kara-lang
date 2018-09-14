@@ -27,6 +27,9 @@
 (def (forall? pred seq)
   (exists (negate pred) seq))
 
+(def (last-index ls)
+  (sub1 (length ls)))
+
 (def (stream-remove x s)
   (stream-filter (lam (item)
                    (not (equal? item x)))

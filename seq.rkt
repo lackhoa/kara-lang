@@ -52,11 +52,9 @@
                         (stream-interleave (append1 rest
                                                     (stream-rest first))))))]))
 
-(def (remove-pos ls pos)
-  (cond [(= pos 0) (drop ls 1)]
-        [(> pos 0) (append (take ls pos)
-                           (drop ls (+ pos 1)))]
-        [else (error "REMOVE-POS" "Invalid position" pos)]))
+(def (drop-pos ls pos)
+  (let-values ([(left right)  (split-at ls pos)])
+    (append left (cdr right))))
 
 ;; Add an item to the end of a list
 (def (pad ls single-item)

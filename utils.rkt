@@ -24,6 +24,27 @@
 (def (sum-list ls)
   (foldr + 0 ls))
 
+(def (best fn ls)
+  (match ls
+    [(list)          'no-elem]
+    [(cons fst rst)  (let ([winner fst])
+                       (for ([obj rst]) (when (fn obj winner)
+                                          (set! winner obj)))
+                       winner)]))
+
+(def (most (fn ls))
+  (match ls
+    [(list)          'no-elem]
+    [(cons fst rst)  (let ([res (list fst)]
+                           [max (fn fst)])
+                       (for [obj rst]
+                         (let ([score (fn obj)])
+                           (cond [(> score max)
+                                  (set! res (list obj))
+                                  (set! max score)]
+                                 [(= score max)
+                                  (cons! obj res)]))))]))
+
 ;;; ------------------------------------------------------------
 ;;; Hash Tables
 ;;; ------------------------------------------------------------
@@ -57,6 +78,11 @@
                [port (current-output-port)])
   (parameterize ([pretty-print-columns columns])
     (pretty-display x port)))
+
+(def (pydisplay . objs)
+  (for ([obj objs])
+    (display obj)
+    (display " ")))
 
 ;;; ------------------------------------------------------------
 ;; Generators

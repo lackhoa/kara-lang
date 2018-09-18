@@ -53,6 +53,16 @@
     (set! ht (hash-set ht item val)))
   ht)
 
+(define-syntax-rule (def-mem (f args ...) bodies ...)
+  ;; replace define with a memoized version
+  (define f
+    ;; store the cache as a hash of args => result
+    (let ([results (make-hash)])
+      (lambda (args ...)
+        (hash-ref! results
+                   (list args ...)
+                   (thunk (begin bodies ...)))))))
+
 ;;; ------------------------------------------------------------
 ;; Testing Functions
 ;;; ------------------------------------------------------------

@@ -92,7 +92,8 @@
 (def (pydisplay . objs)
   (for ([obj objs])
     (display obj)
-    (display " ")))
+    (display " "))
+  (newline))
 
 ;;; ------------------------------------------------------------
 ;; Generators

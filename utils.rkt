@@ -7,10 +7,10 @@
 ;;; -----------------------------------------------------------
 ;; Functional Stuff
 ;;; -----------------------------------------------------------
-(def (repeat func times)
+(def (repeat times func)
   (when (> times 0)
     (func)
-    (repeat func (- times 1))))
+    (repeat (sub1 times) func)))
 
 (def (nequal? x y)
   (not (equal? x y)))

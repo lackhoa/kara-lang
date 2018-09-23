@@ -27,6 +27,10 @@
 (def (forall? pred seq)
   (exists (negate pred) seq))
 
+(def (list-update* ls func)
+  (for/list ([item ls])
+    (func item)))
+
 (def (last-index ls)
   (sub1 (length ls)))
 

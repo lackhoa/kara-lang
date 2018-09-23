@@ -17,6 +17,3 @@
          (all-from-out racket/trace)
          (all-from-out racket/generator)
          (all-from-out rackunit))
-
-(current-prefix-in "|")
-(current-prefix-out "|")

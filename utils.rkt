@@ -18,6 +18,17 @@
 (def (neq? x y)
   (not (eq? x y)))
 
+(def (eq*? . args)
+  (andmap (lam (x)  (eq? x (car args)))
+          (cdr args)))
+
+(def (equal*? . args)
+  (andmap (lam (x)  (equal? x (car args)))
+          (cdr args)))
+
+(def (bool x)
+  (match x [#f  #f] [_   #t]))
+
 (def (flip fn)
   (lam (x y) (fn y x)))
 

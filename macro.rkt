@@ -14,19 +14,6 @@
 (define-syntax-rule (def* (id ids ...) expr)
   (match-define (list id ids ...) expr))
 
-;; Switch: an even simpler dispatch than `case`
-(define-syntax switch
-  (syntax-rules (else)
-    ;; Else
-    [(_ val [else e1 e2 ...]) (begin e1 e2 ...)]
-    ;; No cases left
-    [(_ val) (error "Switch" "No match found" val)]
-    ;; Cases left
-    [(_ val [compare e1 e2 ...] rest ...)
-     (if (eq? val compare)
-         (begin e1 e2 ...)
-         (switch val rest ...))]))
-
 (define-syntax-rule (cons! item ls)
   ;; Add an element to the beginning of the list.
   (set! ls (cons item
@@ -50,3 +37,7 @@
   ;; Set and then return the value
   (begin (set! var val)
          var))
+
+(define-syntax-rule (assert bool msg objs ...)
+  (unless bool
+    (error msg objs ...)))

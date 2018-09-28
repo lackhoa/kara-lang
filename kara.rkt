@@ -41,6 +41,12 @@
 (define-syntax-rule (andb e ...)
   (bool (and e ...)))
 
+(define-syntax-rule (for/andb e ...)
+  (bool (for/and e ...)))
+
+(define-syntax-rule (for/orb e ...)
+  (bool (for/or e ...)))
+
 ;;; Functional Stuff
 (def (repeat times func)
   (when (> times 0)

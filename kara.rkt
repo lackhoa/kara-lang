@@ -133,6 +133,12 @@
   (parameterize ([pretty-print-columns columns])
     (pretty-display x port)))
 
+(def (pprint x
+             [columns 35]
+             [port (current-output-port)])
+  (parameterize ([pretty-print-columns columns])
+    (pretty-print x port)))
+
 (def (pydisplay . objs)
   (for ([obj objs])
     (display obj)

@@ -187,7 +187,8 @@
         [else                  (stream-member x (cdr seq))]))
 
 (def (forall? pred seq)
-  (bool (findf (negate pred) seq)))
+  (not (bool (findf (negate pred)
+                  seq))))
 
 (def (last-index ls)
   (sub1 (length ls)))

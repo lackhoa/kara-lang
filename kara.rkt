@@ -1,10 +1,16 @@
 #lang racket
+(module old racket
+        (provide (prefix-out old: eq?)
+                 (prefix-out old: equal?)
+                 (prefix-out old: list-ref)))
 (require racket/trace
          racket/generator
-         rackunit)
+         rackunit
+         'old)
 (provide (all-from-out racket/trace)
          (all-from-out racket/generator)
          (all-defined-out))
+
 
 ;;; Macros
 (define-syntax-rule (lam whatever ...)
@@ -53,19 +59,22 @@
     (func)
     (repeat (sub1 times) func)))
 
-(def (nequal? x y)
-  (not (equal? x y)))
+(def (eq? . args)
+  (forall? (lam (x)  (old:eq? x (car args)))
+           (cdr args)))
 
-(def (neq? x y)
-  (not (eq? x y)))
+(def neq?
+  (negate eq?))
 
-(def (eq*? . args)
-  (andmap (lam (x)  (eq? x (car args)))
-          (cdr args)))
+(def (equal? . args)
+  (forall? (lam (x)  (old:equal? x (car args)))
+           (cdr args)))
 
-(def (equal*? . args)
-  (andmap (lam (x)  (equal? x (car args)))
-          (cdr args)))
+(def nequal?
+  (negate equal?))
+
+(def not-null?
+  (negate null?))
 
 (def (bool x)
   (match x [#f  #f] [_   #t]))
@@ -190,8 +199,8 @@
   (not (bool (findf (negate pred)
                   seq))))
 
-(def (last-index ls)
-  (sub1 (length ls)))
+(def last-index
+  (compose sub1 length))
 
 (def (stream-remove x s)
   (stream-filter (lam (item)
@@ -201,13 +210,25 @@
 (define (flatmap func ls)
   (foldr append null (map func ls)))
 
-(def (drop-pos ls pos)
+(def (drop ls pos)
   (let-values ([(left right)  (split-at ls pos)])
     (append left (cdr right))))
 
-;; Add an item to the end of a list
-(def (pad ls single-item)
+(def (rcons ls single-item)
+  ;; Add an item to the end of a list
   (append ls (list single-item)))
+
+(def rcdr
+  (curryr drop-right 1))
+
+(def (list-ref ls pos)
+  (match pos
+    [(or (? positive?) 0)  (old:list-ref ls pos)]
+    [_                    (old:list-ref (reverse ls)
+                                        (sub1 (- pos)))]))
+
+(def last
+  (curryr list-ref -1))
 
 ;;; The stack
 (define stack%

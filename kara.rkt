@@ -11,7 +11,6 @@
          (all-from-out racket/generator)
          (all-defined-out))
 
-
 ;;; Macros
 (define-syntax-rule (lam whatever ...)
   (lambda whatever ...))
@@ -53,6 +52,14 @@
 (define-syntax-rule (for/orb e ...)
   (bool (for/or e ...)))
 
+(define-syntax >>
+  ;; Do notation like monad
+  (syntax-rules ()
+    [(_ x f)          (f x)]
+    [(_ x f1 f2 ...)  (match (f1 x)
+                        [#f   #f]
+                        [f1x  (>> f1x f2 ...)])]))
+
 ;;; Functional Stuff
 (def (repeat times func)
   (when (> times 0)
@@ -82,29 +89,7 @@
 (def (flip fn)
   (lam (x y) (fn y x)))
 
-(def (sum-list ls)
-  (foldr + 0 ls))
 
-(def (best fn ls)
-  (match ls
-    [(list)          'no-elem]
-    [(cons fst rst)  (let ([winner fst])
-                       (for ([obj rst]) (when (fn obj winner)
-                                          (set! winner obj)))
-                       winner)]))
-
-(def (most fn ls)
-  (match ls
-    [(list)          'no-elem]
-    [(cons fst rst)  (let ([res (list fst)]
-                           [max (fn fst)])
-                       (for ([obj rst])
-                         (let ([score (fn obj)])
-                           (cond [(> score max)
-                                  (set! res (list obj))
-                                  (set! max score)]
-                                 [(= score max)
-                                  (cons! obj res)]))))]))
 
 ;;; Hash Tables
 (def (hash-set-many ht ls val)
@@ -190,6 +175,31 @@
                 (loop))]))))
 
 ;;; Sequence
+(def (sum-list ls)
+  (foldr + 0 ls))
+
+(def (best fn ls)
+  (match ls
+    [(list)          'no-elem]
+    [(cons fst rst)  (let ([winner fst])
+                       (for ([obj rst]) (when (fn obj winner)
+                                          (set! winner obj)))
+                       winner)]))
+
+(def (most fn ls)
+  (match ls
+    [(list)          'no-elem]
+    [(cons fst rst)  (let ([res (list fst)]
+                           [max (fn fst)])
+                       (for ([obj rst])
+                         (let ([score (fn obj)])
+                           (cond [(> score max)
+                                  (set! res (list obj))
+                                  (set! max score)]
+                                 [(= score max)
+                                  (cons! obj res)]))))]))
+
+
 (def (stream-member x seq)
   (cond [(stream-empty? seq)   #f]
         [(equal? x (car seq))  seq]

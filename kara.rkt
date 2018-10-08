@@ -55,12 +55,15 @@
 (define-syntax >>
   ;; Do notation like monad
   (syntax-rules ()
-    [(_ x f)          (f x)]
-    [(_ x f1 f2 ...)  (match (f1 x)
-                        [#f   #f]
-                        [f1x  (>> f1x f2 ...)])]))
+    [(_ x)            x]
+    [(_ x f1 f2 ...)  (and x
+                         (>> (f1 x) f2 ...))]))
 
 ;;; Functional Stuff
+(def ((capture [f  displayln]) x)
+  (begin (f x)
+         x))
+
 (def (repeat times func)
   (when (> times 0)
     (func)

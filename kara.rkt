@@ -77,7 +77,7 @@
   (negate eq?))
 
 (def (equal? . args)
-  (for/andb [x  (cdr args)]
+  (for/andb ([x  (cdr args)])
     (old:equal? x (car args))))
 
 (def nequal?

@@ -70,15 +70,15 @@
     (repeat (sub1 times) func)))
 
 (def (eq? . args)
-  (forall? (lam (x)  (old:eq? x (car args)))
-           (cdr args)))
+  (for/andb ([x  (cdr args)])
+    (old:eq? x (car args))))
 
 (def neq?
   (negate eq?))
 
 (def (equal? . args)
-  (forall? (lam (x)  (old:equal? x (car args)))
-           (cdr args)))
+  (for/andb [x  (cdr args)]
+    (old:equal? x (car args))))
 
 (def nequal?
   (negate equal?))
@@ -207,10 +207,6 @@
   (cond [(stream-empty? seq)   #f]
         [(equal? x (car seq))  seq]
         [else                  (stream-member x (cdr seq))]))
-
-(def (forall? pred seq)
-  (not (bool (findf (negate pred)
-                  seq))))
 
 (def last-index
   (compose sub1 length))

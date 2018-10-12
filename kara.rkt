@@ -92,8 +92,6 @@
 (def (flip fn)
   (lam (x y) (fn y x)))
 
-
-
 ;;; Hash Tables
 (def (hash-set-many ht ls val)
   (for ([item ls])
@@ -178,6 +176,9 @@
                 (loop))]))))
 
 ;;; Sequence
+(def exclude-false
+  (curry remq* '(#f)))
+
 (def (sum-list ls)
   (foldr + 0 ls))
 

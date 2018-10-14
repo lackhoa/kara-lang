@@ -182,13 +182,11 @@
     (let loop ([ls   ls]
                [res  '()]
                [i    0])
-      (cond [(= i (sub1 n))
-             (rcons res ls)]
+      (cond [(= i (sub1 n))  (rcons res ls)]
             [else
-             (let-values ([(ls1 ls2)  (split-at ls
-                                                (if (< i r)
-                                                    (add1 q)
-                                                    q))])
+             (let-values ([(ls1 ls2)  (split-at ls (if (< i r)
+                                                       (add1 q)
+                                                       q))])
                (loop ls2
                      (rcons res ls1)
                      (add1 i)))]))))

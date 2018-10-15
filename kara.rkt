@@ -59,6 +59,16 @@
     [(_ x f1 f2 ...)  (and x
                          (>> (f1 x) f2 ...))]))
 
+(def (f> fun . args)
+  ;; 'f' stands for 'first'
+  (lam (x)
+    (apply fun (cons x args))))
+
+(def (l> fun . args)
+  ;; Likewise, 'l' stands for 'last'
+  (lam (x)
+    (apply fun (rcons args x))))
+
 ;;; Functional Stuff
 (def ((capture [f  displayln]) x)
   (begin (f x)
@@ -191,6 +201,15 @@
                      (rcons res ls1)
                      (add1 i)))]))))
 
+(define (len<= ls n)
+  (if (exact-nonnegative-integer? n)
+      (match ls
+        ['()           #t]
+        [(cons _ rls)  (cond
+                        [(= n 0)  #f]
+                        [else     (len<= rls (sub1 n))])])
+      (error "What the heck?")))
+
 (def exclude-false
   (curry remq* '(#f)))
 
@@ -234,6 +253,9 @@
 
 (define (flatmap func ls)
   (foldr append null (map func ls)))
+
+(define (flatten1 ls)
+  (foldr append null ls))
 
 (def (drop ls pos)
   (let-values ([(left right)  (split-at ls pos)])

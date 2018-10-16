@@ -210,6 +210,16 @@
                         [else     (len<= rls (sub1 n))])])
       (error "What the heck?")))
 
+(define (take-not-more ls n)
+  (if (len<= ls n)
+      ls
+      (take ls n)))
+
+(define (list-tail-safe ls n)
+  (if (len<= ls n)
+      null
+      (list-tail ls n)))
+
 (def exclude-false
   (curry remq* '(#f)))
 

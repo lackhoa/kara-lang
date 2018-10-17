@@ -186,6 +186,14 @@
                 (loop))]))))
 
 ;;; Sequence
+(define (split-common-postfix l1 l2)
+  (let-values ([(post l1-left l2-left)
+                (split-common-prefix (reverse l1)
+                                     (reverse l2))])
+    (values (reverse post)
+            (reverse l1-left)
+            (reverse l2-left))))
+
 (define (split-evenly ls n)
   (let-values ([(q r)  (quotient/remainder (length ls)
                                            n)])

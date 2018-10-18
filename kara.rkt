@@ -194,6 +194,10 @@
             (reverse l1-left)
             (reverse l2-left))))
 
+(define (zip l1 l2)
+  (for/list ([i1  l1] [i2  l2])
+    `(,i1 ,i2)))
+
 (define (split-evenly ls n)
   (let-values ([(q r)  (quotient/remainder (length ls)
                                            n)])

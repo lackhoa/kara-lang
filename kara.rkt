@@ -79,16 +79,16 @@
     (func)
     (repeat (sub1 times) func)))
 
-(def (eq? . args)
-  (for/andb ([x  (cdr args)])
-    (old:eq? x (car args))))
+(def (eq? arg1 . args)
+  (for/and ([x  args])
+    (old:eq? x arg1)))
 
 (def neq?
   (negate eq?))
 
-(def (equal? . args)
-  (for/andb ([x  (cdr args)])
-    (old:equal? x (car args))))
+(def (equal? arg1 . args)
+  (for/and ([x  args])
+    (old:equal? x arg1)))
 
 (def nequal?
   (negate equal?))

@@ -1,5 +1,5 @@
 (library (kara-lang main)
-  (export assert >> f> l> capture repeat eq*?
+  (export assert >> f> l> capture repeat eq*? repeat
           equal*? bool fib square pydisplay list-<
           zip len<= list-head-safe list-tail-safe last-index)
   (import (chezscheme))
@@ -29,10 +29,10 @@
                   x)))
 
   (define repeat
-    (lambda (times func)
+    (lambda (times func!)
       (do ([times times (- times 1)])
           ((<= times 0))
-        (func))))
+        (func!))))
 
   (define eq*?
     (lambda (arg1 . args)
@@ -59,7 +59,7 @@
 ;;; Display
   (define (pydisplay . objs)
     (for-each (lambda (obj) (display obj)
-                      (display " "))
+                 (display " "))
               objs)
     (newline))
 

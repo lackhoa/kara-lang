@@ -1,7 +1,8 @@
 (library (kara-lang main)
   (export assert >> f> l> capture repeat eq*? repeat
           equal*? bool fib square pydisplay list-<
-          zip len<= list-head-safe list-tail-safe last-index)
+          zip len<= list-head-safe list-tail-safe last-index
+          string-append-spc)
   (import (chezscheme))
 
 ;;; Functional Stuff
@@ -62,6 +63,14 @@
                  (display " "))
               objs)
     (newline))
+
+  (define string-append-spc
+    (lambda strings
+      (list-< (cdr strings)
+              (car strings)
+              (lambda (x y)
+                (string-append (car strings) " "
+                               (apply string-append-spc (cdr strings)))))))
 
 ;;; Sequence
   (define list-<

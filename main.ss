@@ -2,8 +2,24 @@
   (export assert >> f> l> capture repeat eq*? repeat
           equal*? bool fib square pydisplay list-<
           zip len<= list-head-safe list-tail-safe last-index
-          string-append-spc)
+          string-append-spc nat-<)
   (import (chezscheme))
+
+
+;;; Macros
+  (define-syntax list-<
+    ;; List dispatch
+    (syntax-rules ()
+      [(_ ls vnull fnorm)
+       (if (null? ls) vnull
+           (fnorm (car ls)
+                  (cdr ls)))]))
+
+  (define-syntax nat-<
+    (syntax-rules ()
+      [(_ n zero-val sub1-func)
+       (if (zero? n) zero-val
+           (sub1-func (- n 1)))]))
 
 ;;; Functional Stuff
   (define >>
@@ -73,12 +89,7 @@
                                (apply string-append-spc (cdr strings)))))))
 
 ;;; Sequence
-  (define list-<
-    ;; List dispatch
-    (lambda (ls vnull fnorm)
-      (if (null? ls)
-          vnull
-          (fnorm (car ls) (cdr ls)))))
+
 
   (define (zip l1 . ls)
     (apply map list l1 ls))

@@ -2,7 +2,7 @@
   (export assert >> f> l> capture repeat eq*? repeat
           equal*? bool fib square pydisplay list-<
           zip len<= list-head-safe list-tail-safe last-index
-          string-append-spc nat-<)
+          string-append-spc nat-< flatmap negate f>>)
   (import (chezscheme))
 
 
@@ -38,8 +38,21 @@
 
   (define l>
     (lambda (fun . args)
-      (lambda (x)
-        (apply fun `(,@args ,x)))))
+      (lambda x
+        (apply fun (append args x)))))
+
+  (define f>>
+    (lambda args
+      (apply f> >> args)))
+
+  (define negate
+    (lambda (fun)
+      (lambda args
+        (not (apply fun args)))))
+
+  (define flatmap
+    (lambda (fun ls)
+      (apply append (map fun ls))))
 
   (define capture
     (lambda (x) (begin (pydisplay x)

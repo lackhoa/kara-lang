@@ -2,7 +2,7 @@
   (export assert >> f> l> capture repeat eq*? repeat
           equal*? bool fib square pydisplay list-<
           zip len<= list-head-safe list-tail-safe last-index
-          string-append-spc nat-< flatmap negate f>>)
+          string-append-spc nat-< flatmap negate f>> filter-false)
   (import (chezscheme))
 
 
@@ -102,7 +102,8 @@
                                (apply string-append-spc (cdr strings)))))))
 
 ;;; Sequence
-
+  (define filter-false
+    (l> filter (lambda (x) x)))
 
   (define (zip l1 . ls)
     (apply map list l1 ls))

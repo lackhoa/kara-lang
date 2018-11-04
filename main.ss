@@ -2,7 +2,8 @@
   (export assert >> f> l> capture repeat eq*? repeat
           equal*? bool fib square pydisplay list-<
           zip len<= list-head-safe list-tail-safe last-index
-          string-append-spc nat-< flatmap negate f>> filter-false)
+          string-append-spc nat-< flatmap negate f>> filter-false
+          pass)
   (import (chezscheme))
 
 
@@ -44,6 +45,11 @@
   (define f>>
     (lambda args
       (apply f> >> args)))
+
+  (define pass
+    (lambda (pred)
+      (lambda (x)
+        (if (pred x) x #f))))
 
   (define negate
     (lambda (fun)
@@ -131,3 +137,14 @@
 
   (define last-index
     (lambda (ls) (- (length ls) 1))))
+
+(define (strip-duplicates ls)
+  (let loop ((rest ls)
+             (so-far '()))
+    (if (null? rest)
+        so-far
+        (loop (cdr rest)
+              (let ((first (car rest)))
+                (if (member first (cdr rest))
+                    so-far
+                    (cons first so-far)))))))

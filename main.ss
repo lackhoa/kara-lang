@@ -1,35 +1,23 @@
 (library (kara-lang main)
   (export assert >> f> l> capture repeat eq*? repeat
-          equal*? bool fib square pydisplay list-<
+          equal*? bool fib square pydisplay
           zip len<= list-head-safe list-tail-safe last-index
-          string-append-spc nat-< flatmap negate f>> filter-false
+          string-append-spc flatmap negate f>> filter-false
           pass)
   (import (chezscheme))
 
 
 ;;; Macros
-  (define-syntax list-<
-    ;; List dispatch
-    (syntax-rules ()
-      [(_ ls vnull fnorm)
-       (if (null? ls) vnull
-           (fnorm (car ls)
-                  (cdr ls)))]))
 
-  (define-syntax nat-<
-    (syntax-rules ()
-      [(_ n zero-val sub1-func)
-       (if (zero? n) zero-val
-           (sub1-func (- n 1)))]))
 
 ;;; Functional Stuff
   (define >>
     ;; Haskell's do notation (or at least what I think it is)
     (lambda (x . fs)
-      (list-< fs x
-              (lambda (f1 frest)
-                (and x
-                   (apply >> (f1 x) frest))))))
+      (if (null? fs)  x
+          (and x
+             (apply >>
+               ((car fs) x) (cdr fs))))))
 
   (define f>
     ;; 'f' stands for 'first'
@@ -101,11 +89,10 @@
 
   (define string-append-spc
     (lambda strings
-      (list-< (cdr strings)
-              (car strings)
-              (lambda (x y)
-                (string-append (car strings) " "
-                               (apply string-append-spc (cdr strings)))))))
+      (if (null? (cdr strings))  (car strings)
+          (string-append (car strings) " "
+                         (apply string-append-spc
+                           (cdr strings))))))
 
 ;;; Sequence
   (define filter-false
@@ -116,12 +103,10 @@
 
   (define (len<= ls n)
     (if (fxnonnegative? n)
-        (list-< ls
-                #t
-                (lambda (_ rls)
-                  (cond
-                   [(= n 0)  #f]
-                   [else     (len<= rls (- n 1))])))
+        (if (null? ls)  #t
+            (cond
+             [(= n 0)  #f]
+             [else     (len<= (cdr ls) (- n 1))]))
         (error "len<=" "What the heck?" n)))
 
   (define (list-head-safe ls n)

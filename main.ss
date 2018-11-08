@@ -3,7 +3,7 @@
           equal*? bool fib square pydisplay
           zip len<= list-head-safe list-tail-safe last-index
           string-append-spc flatmap negate f>> filter-false
-          pass)
+          pass identity)
   (import (chezscheme))
 
 
@@ -33,6 +33,9 @@
   (define f>>
     (lambda args
       (apply f> >> args)))
+
+  (define identity
+    (lambda (i) i))
 
   (define pass
     (lambda (pred)

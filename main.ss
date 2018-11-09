@@ -3,7 +3,7 @@
           equal*? bool fib square pydisplay
           zip len<= list-head-safe list-tail-safe last-index
           string-append-spc flatmap negate f>> filter-false
-          pass identity)
+          pass identity last-item strip-duplicates)
   (import (chezscheme))
 
 
@@ -124,15 +124,18 @@
           (list-tail ls n))))
 
   (define last-index
-    (lambda (ls) (- (length ls) 1))))
+    (lambda (ls) (- (length ls) 1)))
 
-(define (strip-duplicates ls)
-  (let loop ((rest ls)
-             (so-far '()))
-    (if (null? rest)
-        so-far
-        (loop (cdr rest)
-              (let ((first (car rest)))
-                (if (member first (cdr rest))
-                    so-far
-                    (cons first so-far)))))))
+  (define last-item
+    (f>> last-pair car))
+
+  (define (strip-duplicates ls)
+    (let loop ((rest ls)
+               (so-far '()))
+      (if (null? rest)
+          so-far
+          (loop (cdr rest)
+                (let ((first (car rest)))
+                  (if (member first (cdr rest))
+                      so-far
+                      (cons first so-far))))))))

@@ -53,7 +53,7 @@
 
   (define capture
     (lambda (x) (begin (pydisplay x)
-                  x)))
+                       x)))
 
   (define repeat
     (lambda (times func!)
@@ -64,12 +64,12 @@
   (define eq*?
     (lambda (arg1 . args)
       (for-all (lambda (x) (eq? x arg1))
-         args)))
+               args)))
 
   (define equal*?
     (lambda (arg1 . args)
       (for-all (lambda (x) (equal? x arg1))
-         args)))
+               args)))
 
   (define (bool x)
     (case x [#f  #f] [else  #t]))
@@ -86,7 +86,7 @@
 ;;; Display
   (define (pydisplay . objs)
     (for-each (lambda (obj) (display obj)
-                 (display " "))
+                      (display " "))
               objs)
     (newline))
 
@@ -132,8 +132,7 @@
   (define (strip-duplicates ls)
     (let loop ((rest ls)
                (so-far '()))
-      (if (null? rest)
-          so-far
+      (if (null? rest)  so-far
           (loop (cdr rest)
                 (let ((first (car rest)))
                   (if (member first (cdr rest))

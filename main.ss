@@ -1,140 +1,136 @@
-(library (kara-lang main)
-  (export assert >> f> l> capture repeat eq*? repeat
-          equal*? bool fib square pydisplay
-          zip len<= list-head-safe list-tail-safe last-index
-          string-append-spc flatmap negate f>> filter-false
-          pass identity last-item strip-duplicates)
-  (import (chezscheme))
-
-
 ;;; Macros
 
 
 ;;; Functional Stuff
-  (define >>
-    ;; Haskell's do notation (or at least what I think it is)
-    (lambda (x . fs)
-      (if (null? fs)  x
-          (and x
-             (apply >>
-               ((car fs) x) (cdr fs))))))
+(define >>
+  ;; Haskell's do notation (or at least what I think it is)
+  (lambda (x . fs)
+    (if (null? fs)  x
+        (and x
+           (apply >>
+             ((car fs) x) (cdr fs))))))
 
-  (define f>
-    ;; 'f' stands for 'first'
-    (lambda (fun . args)
-      (lambda (x)
-        (apply fun `(,x ,@args)))))
+(define f>
+  ;; 'f' stands for 'first'
+  (lambda (fun . args)
+    (lambda x
+      (apply fun (append x args)))))
 
-  (define l>
-    (lambda (fun . args)
-      (lambda x
-        (apply fun (append args x)))))
+(define l>
+  (lambda (fun . args)
+    (lambda x
+      (apply fun (append args x)))))
 
-  (define f>>
+(define f>>
+  (lambda args
+    (apply f> >> args)))
+
+(define identity
+  (lambda (i) i))
+
+(define pass
+  (lambda (pred)
+    (lambda (x)
+      (if (pred x) x #f))))
+
+(define negate
+  (lambda (fun)
     (lambda args
-      (apply f> >> args)))
+      (not (apply fun args)))))
 
-  (define identity
-    (lambda (i) i))
+(define flatmap
+  (lambda (fun ls)
+    (apply append (map fun ls))))
 
-  (define pass
-    (lambda (pred)
-      (lambda (x)
-        (if (pred x) x #f))))
+(define capture
+  (lambda (x) (begin (pydisplay x)
+                x)))
 
-  (define negate
-    (lambda (fun)
-      (lambda args
-        (not (apply fun args)))))
+(define repeat
+  (lambda (times func!)
+    (do ([times times (- times 1)])
+        ((<= times 0))
+      (func!))))
 
-  (define flatmap
-    (lambda (fun ls)
-      (apply append (map fun ls))))
+(define eq*?
+  (lambda (arg1 . args)
+    (for-all (lambda (x) (eq? x arg1))
+       args)))
 
-  (define capture
-    (lambda (x) (begin (pydisplay x)
-                       x)))
+(define equal*?
+  (lambda (arg1 . args)
+    (for-all (lambda (x) (equal? x arg1))
+       args)))
 
-  (define repeat
-    (lambda (times func!)
-      (do ([times times (- times 1)])
-          ((<= times 0))
-        (func!))))
-
-  (define eq*?
-    (lambda (arg1 . args)
-      (for-all (lambda (x) (eq? x arg1))
-               args)))
-
-  (define equal*?
-    (lambda (arg1 . args)
-      (for-all (lambda (x) (equal? x arg1))
-               args)))
-
-  (define (bool x)
-    (case x [#f  #f] [else  #t]))
+(define (bool x)
+  (case x [#f  #f] [else  #t]))
 
 ;;; Testing Functions
-  (define (fib n)
-    (cond [(= 0 n) 1]
-          [(= 1 n) 1]
-          [else (+ (fib (- n 1)) (fib (- n 2)))]))
+(define (fib n)
+  (cond [(= 0 n) 1]
+        [(= 1 n) 1]
+        [else (+ (fib (- n 1)) (fib (- n 2)))]))
 
-  (define square
-    (lambda (n) (* n n)))
+(define square
+  (lambda (n) (* n n)))
 
 ;;; Display
-  (define (pydisplay . objs)
-    (for-each (lambda (obj) (display obj)
-                      (display " "))
-              objs)
-    (newline))
+(define (pydisplay . objs)
+  (for-each (lambda (obj) (display obj)
+                    (display " "))
+            objs)
+  (newline))
 
-  (define string-append-spc
-    (lambda strings
-      (if (null? (cdr strings))  (car strings)
-          (string-append (car strings) " "
-                         (apply string-append-spc
-                           (cdr strings))))))
+(define string-append-spc
+  (lambda strings
+    (if (null? (cdr strings))  (car strings)
+        (string-append (car strings) " "
+                       (apply string-append-spc
+                         (cdr strings))))))
 
 ;;; Sequence
-  (define filter-false
-    (l> filter (lambda (x) x)))
+(define filter-false
+  (l> filter (lambda (x) x)))
 
-  (define (zip l1 . ls)
-    (apply map list l1 ls))
+(define (zip l1 . ls)
+  (apply map list l1 ls))
 
-  (define (len<= ls n)
-    (if (fxnonnegative? n)
-        (if (null? ls)  #t
-            (cond
-             [(= n 0)  #f]
-             [else     (len<= (cdr ls) (- n 1))]))
-        (error "len<=" "What the heck?" n)))
+(define (len<= ls n)
+  (if (fxnonnegative? n)
+      (if (null? ls)  #t
+          (cond
+           [(= n 0)  #f]
+           [else     (len<= (cdr ls) (- n 1))]))
+      (error "len<=" "What the heck?" n)))
 
-  (define (list-head-safe ls n)
+(define (list-head-safe ls n)
+  (if (len<= ls n)
+      ls
+      (list-head ls n)))
+
+(define list-tail-safe
+  (lambda (ls n)
     (if (len<= ls n)
-        ls
-        (list-head ls n)))
+        '()
+        (list-tail ls n))))
 
-  (define list-tail-safe
-    (lambda (ls n)
-      (if (len<= ls n)
-          '()
-          (list-tail ls n))))
+(define last-index
+  (lambda (ls) (- (length ls) 1)))
 
-  (define last-index
-    (lambda (ls) (- (length ls) 1)))
+(define last-item
+  (f>> last-pair car))
 
-  (define last-item
-    (f>> last-pair car))
+(define (strip-duplicates ls)
+  (let loop ((rest ls)
+             (so-far '()))
+    (if (null? rest)  so-far
+        (loop (cdr rest)
+              (let ((first (car rest)))
+                (if (member first (cdr rest))
+                    so-far
+                    (cons first so-far)))))))
 
-  (define (strip-duplicates ls)
-    (let loop ((rest ls)
-               (so-far '()))
-      (if (null? rest)  so-far
-          (loop (cdr rest)
-                (let ((first (car rest)))
-                  (if (member first (cdr rest))
-                      so-far
-                      (cons first so-far))))))))
+(define key-merge
+  (lambda (l1 l2)
+    (sort (lambda (x y)  (< (car x) (car y)))
+          l1 l2)))

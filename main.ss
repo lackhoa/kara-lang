@@ -120,17 +120,26 @@
 (define last-item
   (f>> last-pair car))
 
-(define (strip-duplicates ls)
-  (let loop ((rest ls)
-             (so-far '()))
-    (if (null? rest)  so-far
-        (loop (cdr rest)
-              (let ((first (car rest)))
-                (if (member first (cdr rest))
-                    so-far
-                    (cons first so-far)))))))
+(define remove-duplicates
+  (lambda (ls)
+    (let ([recur  (lambda _ (remove-duplicates (cdr ls)))])
+      (cond [(null? ls)         '[]]
+            [(member (car ls)
+                     (cdr ls))  (recur)]
+            [else               (cons (car ls) (recur))]))))
 
 (define key-merge
-  (lambda (l1 l2)
-    (sort (lambda (x y)  (< (car x) (car y)))
-          l1 l2)))
+  (lambda (x y)
+    (cond [(null? x)     y]
+          [(null? y)     x]
+          [(< (caar x)
+              (caar y))  (cons (car x) (key-merge (cdr x) y))]
+          [else          (cons (car y) (key-merge x (cdr y)))])))
+
+(define key-sort
+  (l> sort (lambda (x y) (< (car x) (car y)))))
+
+(define get
+  (lambda (x s)
+    (cond [(assq x s)  ⇒ cdr]
+          [else        x])))

@@ -129,12 +129,7 @@
             [else               (cons (car ls) (recur))]))))
 
 (define key-merge
-  (lambda (x y)
-    (cond [(null? x)     y]
-          [(null? y)     x]
-          [(< (caar x)
-              (caar y))  (cons (car x) (key-merge (cdr x) y))]
-          [else          (cons (car y) (key-merge x (cdr y)))])))
+  (l> merge (lambda (x y) (< (caar x) (caar y)))))
 
 (define key-sort
   (l> sort (lambda (x y) (< (car x) (car y)))))

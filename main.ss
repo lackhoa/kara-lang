@@ -128,6 +128,14 @@
                      (cdr ls))  (recur)]
             [else               (cons (car ls) (recur))]))))
 
+(define find-duplicates
+  (lambda (ls)
+    (let ([recur  (lambda _ (find-duplicates (cdr ls)))])
+      (cond [(null? ls)         '[]]
+            [(member (car ls)
+                     (cdr ls))  (cons (car ls) (recur))]
+            [else               (recur)]))))
+
 (define key-merge
   (l> merge (lambda (x y) (< (caar x) (caar y)))))
 
@@ -139,9 +147,24 @@
     (cond [(assq x s)  ⇒ cdr]
           [else        x])))
 
+(define size
+  (lambda (x)
+    (cond [(pair? x)  (+ (size (car x))
+                         (size (cdr x)))]
+          [(null? x)  0]
+          [else       1])))
+
+(define occurs
+  (lambda (x l)
+    (or (equal? x l)
+       (and (pair? l)
+          (or (occurs x (car l))
+             (occurs x (cdr l)))))))
+
 ;;; Pattern matching by Oleg
 ;; Very different from Racket match
-;; You gotta unquote variables to bind them
+;; The pattern is quasiquoted
+;; "_" becomes "(unquote ?)"
 (define-syntax pmatch
   (syntax-rules (else guard)
     [(_ (op arg ...) cs ...)            (let ([v  (op arg ...)])
@@ -158,8 +181,8 @@
                                           (ppat v pat (begin e0 e ...) (fk)))]))
 
 (define-syntax ppat
-  (syntax-rules (quote __ unquote)
-    [(_ v __ kt kf)             kt]
+  (syntax-rules (quote ? unquote)
+    [(_ v (unquote ?) kt kf)    kt]
     [(_ v () kt kf)             (if (null? v) kt kf)]
     [(_ v (quote lit) kt kf)    (if (equal? v (quote lit))  kt
                                     kf)]
